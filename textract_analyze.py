@@ -16,9 +16,17 @@ document_name = 'sample_builder_report_with_table.pdf'
 json_path = "/home/steffi/aisd/Hackathon/fake_reports/sample_reports_pdf/sample_builder_report_with_table.json"
 
 # OpenSearch config
-opensearch_host = 'search-buildersearch-hbddh2y233wifg5hi2lhl3nmdu.us-east-2.es.amazonaws.com'  # no https://
-opensearch_index = 'buildersearch'
-opensearch_auth = ('admin', 'Bu!ld3!@p%wd')  # Or use IAM auth if secured
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+opensearch_host = os.getenv("OPENSEARCH_HOST")
+opensearch_index = os.getenv("OPENSEARCH_INDEX")
+opensearch_auth = (
+    os.getenv("OPENSEARCH_USER"),
+    os.getenv("OPENSEARCH_PASS")
+ ) # Or use IAM auth if secured
 os_client = OpenSearch(
     hosts=[{"host": opensearch_host, "port": 443}],
     http_auth=opensearch_auth,

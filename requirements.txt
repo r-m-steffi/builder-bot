@@ -1,0 +1,20 @@
+# Core RAG components
+boto3
+pandas
+
+
+sentence-transformers
+faiss-cpu
+
+# OpenSearch for indexing/searching (optional if not used in final version)
+opensearch-py
+
+# UI
+torch==2.2.0
+streamlit==1.33.0
+
+# For local backend (if using Flask for API between Streamlit & FAISS/Ollama)
+flask
+
+# PDF parsing fallback (if not using Textract or for UI PDF upload)
+PyMuPDF  # also known as fitz
