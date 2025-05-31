@@ -1,0 +1,18 @@
+City of Ottawa - Builder Quality Report
+Builder: ABC Homes
+Year: 2024
+House ID
+Issue Type
+Passed Inspection
+H123
+Cracked Wall
+No
+H124
+Plumbing Leak
+No
+H125
+None
+Yes
+H126
+Roof Damage
+No
