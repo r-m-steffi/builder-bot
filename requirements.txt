@@ -2,7 +2,7 @@
 boto3
 pandas
 
-
+#chunking and embedding
 sentence-transformers
 faiss-cpu
 
@@ -18,3 +18,10 @@ flask
 
 # PDF parsing fallback (if not using Textract or for UI PDF upload)
 PyMuPDF  # also known as fitz
+
+#For connecting sensitive info
+python-dotenv
+
+# For Document loading
+trp
+
