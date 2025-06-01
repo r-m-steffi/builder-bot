@@ -2,37 +2,41 @@ import streamlit as st
 import numpy as np
 import faiss
 import json
-import subprocess
 import io
 from sentence_transformers import SentenceTransformer
+import ollama
+
+# --- Function to query local LLM via Ollama API ---
+def query_local_llm(context, question):
+    prompt = f"""Use the following context to answer the question:\n\nContext:\n{context}\n\nQuestion: {question}\nAnswer:"""
+    response = ollama.chat(
+        model='mistral',
+        messages=[{'role': 'user', 'content': prompt}],
+        options={"temperature": 0}  # deterministic output
+    )
+    return response['message']['content']
 
 # --- Initialize session state ---
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# --- Load index and chunks ---
+# --- Load FAISS index and chunk mapping ---
 index = faiss.read_index("builder_index.faiss")
 with open("chunk_lookup.json", "r") as f:
     chunk_lookup = json.load(f)
 
-# --- Load model ---
+# --- Load Sentence Transformer model ---
 model = SentenceTransformer("all-MiniLM-L6-v2")
-
-# --- Function to query local LLM ---
-def query_local_llm(context, question):
-    prompt = f"""Use the following context to answer the question:\n\nContext:\n{context}\n\nQuestion: {question}\nAnswer:"""
-    result = subprocess.run(
-        [r"C:\Users\QA\AppData\Local\Programs\Ollama\ollama.exe", "run", "mistral"],
-        input=prompt.encode(),
-        stdout=subprocess.PIPE
-    )
-    return result.stdout.decode()
 
 # --- Streamlit UI ---
 st.title("🏗️ Local Builder Report Chatbot")
-query = st.text_input("Ask a question about builder reports:")
 
-if query:
+# Input and ask button
+query = st.text_input("Ask a question about builder reports:")
+submit = st.button("Ask")
+
+# Process question only when 'Ask' button is clicked
+if submit and query:
     query_embedding = model.encode([query])
     D, I = index.search(np.array(query_embedding), k=3)
     valid_chunks = [chunk_lookup[str(i)] for i in I[0] if str(i) in chunk_lookup]
@@ -44,18 +48,18 @@ if query:
 
     st.success(answer)
 
-# --- Display chat history if available ---
+# --- Display chat history ---
 if st.session_state.chat_history:
     st.markdown("### 🔄 Chat History")
     for i, chat in enumerate(st.session_state.chat_history, 1):
         st.markdown(f"**Q{i}:** {chat['question']}")
         st.markdown(f"**A{i}:** {chat['answer']}")
 
-    # --- Download button ---
+    # --- Download chat history as TXT ---
     history_text = "\n\n".join([f"Q: {c['question']}\nA: {c['answer']}" for c in st.session_state.chat_history])
     st.download_button("💾 Download Chat History as TXT", data=history_text, file_name="chat_history.txt")
 
-    # --- Clear history button ---
+    # --- Clear chat history ---
     if st.button("🗑️ Clear Chat History"):
         st.session_state.chat_history = []
-        st.experimental_rerun()
+        st.rerun()
