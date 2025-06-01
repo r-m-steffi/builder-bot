@@ -17,10 +17,10 @@ def query_local_llm(context, question):
     
     # Run using Ollama
     result = subprocess.run(
-        ["ollama", "run", "mistral"],
-        input=prompt.encode(),
-        stdout=subprocess.PIPE
-    )
+    [r"C:\Users\QA\AppData\Local\Programs\Ollama\ollama.exe", "run", "mistral"],
+    input=prompt.encode(),
+    stdout=subprocess.PIPE
+)
     return result.stdout.decode()
 
 # UI
