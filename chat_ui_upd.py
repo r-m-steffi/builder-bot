@@ -5,6 +5,8 @@ import json
 import io
 from sentence_transformers import SentenceTransformer
 import ollama
+import os
+st.write("🗂️ Saving feedback to directory:", os.getcwd())
 
 # --- Function to query local LLM via Ollama API ---
 def query_local_llm(context, question):
@@ -45,8 +47,21 @@ if submit and query:
     with st.spinner("Thinking..."):
         answer = query_local_llm(context, query)
         st.session_state.chat_history.append({"question": query, "answer": answer})
+        st.session_state.last_answer = answer  # ✅ Save answer to session
 
     st.success(answer)
+
+    # --- Feedback Section ---
+feedback = st.radio("Was this answer helpful?", ["👍", "👎"], key=f"feedback_{len(st.session_state.chat_history)}")
+
+if st.button("Submit Feedback"):
+    try:
+        with open("feedback_log.txt", "a", encoding="utf-8") as f:
+            f.write(f"{query}\t{st.session_state.last_answer.strip()}\t{feedback}\n")
+        st.success("✅ Feedback saved!")
+    except Exception as e:
+        st.error(f"❌ Error saving feedback: {e}")
+
 
 # --- Display chat history ---
 if st.session_state.chat_history:
