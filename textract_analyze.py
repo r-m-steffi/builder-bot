@@ -70,7 +70,7 @@ for page_num, page in enumerate(doc.pages, 1):
         df.to_json(base + '.json', orient="records", indent=2)
         df.to_csv(base + '.csv', index=False)
 
-        print(f"✅ Saved table: {base + '.csv'}")
+        print(f"Saved table: {base + '.csv'}")
         records = df.to_dict(orient='records')
         document = {
             "builder": "ABC Homes",  # You could extract this from FORM fields
@@ -81,7 +81,7 @@ for page_num, page in enumerate(doc.pages, 1):
         }
 
         res = os_client.index(index=opensearch_index, body=document)
-        print(f"📤 Indexed to OpenSearch: ID={res['_id']}")
+        print(f"Indexed to OpenSearch: ID={res['_id']}")
 
 # Print just the detected lines of text
 #for block in response.get('Blocks', []):
